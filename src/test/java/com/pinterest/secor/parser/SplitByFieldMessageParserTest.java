@@ -24,15 +24,12 @@ import junit.framework.TestCase;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
-@RunWith(PowerMockRunner.class)
 public class SplitByFieldMessageParserTest extends TestCase {
 
     private SecorConfig mConfig;

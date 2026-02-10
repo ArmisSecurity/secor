@@ -22,16 +22,13 @@ import com.pinterest.secor.common.SecorConfig;
 import com.pinterest.secor.message.Message;
 import junit.framework.TestCase;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
 
-@RunWith(PowerMockRunner.class)
 public class JsonMessageParserTest extends TestCase {
 
     private SecorConfig mConfig;

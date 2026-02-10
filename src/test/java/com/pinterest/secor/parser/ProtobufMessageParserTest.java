@@ -22,9 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.google.protobuf.CodedOutputStream;
 import com.pinterest.secor.common.SecorConfig;
@@ -34,7 +32,6 @@ import com.pinterest.secor.protobuf.Messages.UnitTestMessage2;
 
 import junit.framework.TestCase;
 
-@RunWith(PowerMockRunner.class)
 public class ProtobufMessageParserTest extends TestCase {
     private SecorConfig mConfig;
     private long timestamp;

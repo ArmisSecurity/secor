@@ -27,9 +27,7 @@ import com.pinterest.secor.protobuf.Messages;
 import com.pinterest.secor.protobuf.TimestampedMessages;
 import junit.framework.TestCase;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +35,6 @@ import java.util.Map;
 /**
  * Created by pgautam on 10/9/16.
  */
-@RunWith(PowerMockRunner.class)
 public class ProtobufTimestampParserTest extends TestCase {
     private SecorConfig mConfig;
     private long timestamp;

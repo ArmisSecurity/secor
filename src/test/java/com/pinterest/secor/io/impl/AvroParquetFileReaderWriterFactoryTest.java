@@ -31,20 +31,17 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
 import org.apache.avro.specific.SpecificDatumWriter;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
 public class AvroParquetFileReaderWriterFactoryTest extends TestCase {
 
     private AvroParquetFileReaderWriterFactory mFactory;
@@ -80,7 +77,7 @@ public class AvroParquetFileReaderWriterFactoryTest extends TestCase {
         when(secorSchemaRegistryClient.deserialize("test-avro-topic", AvroSerializer.serialize(writer, msg1))).thenReturn(msg1);
         when(secorSchemaRegistryClient.deserialize("test-avro-topic", AvroSerializer.serialize(writer, msg2))).thenReturn(msg2);
 
-        when(secorSchemaRegistryClient.serialize(anyString(), Matchers.any(GenericRecord.class))).
+        when(secorSchemaRegistryClient.serialize(anyString(), any(GenericRecord.class))).
                 thenReturn(AvroSerializer.serialize(writer, msg1), AvroSerializer.serialize(writer, msg2));
 
         mFactory.schemaRegistry = secorSchemaRegistryClient;

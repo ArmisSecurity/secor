@@ -24,13 +24,10 @@ import junit.framework.TestCase;
 import org.apache.thrift.TSerializer;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.pinterest.secor.thrift.UnitTestMessage;
 
-@RunWith(PowerMockRunner.class)
 public class ThriftMessageParserTest extends TestCase {
     private SecorConfig mConfig;
     private long timestamp;

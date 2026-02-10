@@ -23,15 +23,12 @@ import com.pinterest.secor.common.SecorConfig;
 import com.pinterest.secor.message.Message;
 import junit.framework.TestCase;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.HashMap;
 import java.util.TimeZone;
 
-@RunWith(PowerMockRunner.class)
 public class MessagePackParserTest extends TestCase {
 
     SecorConfig mConfig;

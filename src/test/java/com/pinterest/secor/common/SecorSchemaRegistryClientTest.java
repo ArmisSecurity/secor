@@ -32,15 +32,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
 public class SecorSchemaRegistryClientTest extends TestCase {
 
     private KafkaAvroDeserializer kafkaAvroDeserializer;
