@@ -51,7 +51,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <encoding>UTF-8</encoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <parquet.version>1.9.0</parquet.version>
+        <parquet.version>1.17.0</parquet.version>
         <hadoop.version>3.3.6</hadoop.version>
 
         <!-- Name of the directory below src/main/config that contains kafka-version-specific settings -->
@@ -116,7 +116,7 @@
         <dependency>
             <groupId>org.apache.parquet</groupId>
             <artifactId>parquet-avro</artifactId>
-            <version>1.9.0</version>
+            <version>${parquet.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.protobuf</groupId>
