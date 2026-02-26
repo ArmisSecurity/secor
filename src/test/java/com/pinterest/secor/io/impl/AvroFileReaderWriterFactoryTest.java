@@ -26,21 +26,21 @@ import com.pinterest.secor.io.FileReader;
 import com.pinterest.secor.io.FileWriter;
 import com.pinterest.secor.io.KeyValue;
 import com.pinterest.secor.util.AvroSerializer;
-import junit.framework.TestCase;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
 import org.apache.avro.specific.SpecificDatumWriter;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-public class AvroFileReaderWriterFactoryTest extends TestCase {
+public class AvroFileReaderWriterFactoryTest {
 
     private AvroFileReaderWriterFactory mFactory;
     private SpecificDatumWriter<GenericRecord> writer;
@@ -49,7 +49,7 @@ public class AvroFileReaderWriterFactoryTest extends TestCase {
     private GenericRecord msg1;
     private GenericRecord msg2;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
 
         Schema schema = SchemaBuilder.record("UnitTestRecord")

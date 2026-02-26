@@ -21,18 +21,20 @@ package com.pinterest.secor.parser;
 import com.pinterest.secor.common.*;
 import com.pinterest.secor.message.Message;
 
-import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class RegexMessageParserTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class RegexMessageParserTest {
 
     private SecorConfig mConfig;
     private Message mMessageWithMillisTimestamp;
     private Message mMessageWithWrongFormatTimestamp;
     private long timestamp;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         mConfig = Mockito.mock(SecorConfig.class);
         Mockito.when(mConfig.getMessageTimestampInputPattern()).thenReturn("^[^ ]+ [^ ]+ ([^ ]+) .*$");
@@ -81,7 +83,7 @@ public class RegexMessageParserTest extends TestCase {
     @Test(expected=NumberFormatException.class)
     public void testExtractTimestampMillisException1() throws Exception {
         RegexMessageParser regexMessageParser = new RegexMessageParser(mConfig);
-       regexMessageParser.extractTimestampMillis(mMessageWithWrongFormatTimestamp);
+        regexMessageParser.extractTimestampMillis(mMessageWithWrongFormatTimestamp);
     }
 
 }

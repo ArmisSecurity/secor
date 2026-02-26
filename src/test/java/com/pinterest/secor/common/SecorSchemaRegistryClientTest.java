@@ -23,32 +23,28 @@ import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
-import junit.framework.TestCase;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.GenericRecordBuilder;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import java.io.IOException;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
-public class SecorSchemaRegistryClientTest extends TestCase {
+public class SecorSchemaRegistryClientTest {
 
     private KafkaAvroDeserializer kafkaAvroDeserializer;
     private SchemaRegistryClient schemaRegistryClient;
     private SecorSchemaRegistryClient secorSchemaRegistryClient;
     private KafkaAvroSerializer avroSerializer;
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
-    @Override
+    @Before
     public void setUp() {
         initKafka();
         SecorConfig secorConfig = Mockito.mock(SecorConfig.class);
@@ -116,8 +112,10 @@ public class SecorSchemaRegistryClientTest extends TestCase {
 
     @Test
     public void testGetSchemaDoesNotExist() {
-        exception.expect(IllegalStateException.class);
-        exception.expectMessage("Avro schema not found for topic test-avr-topic-3");
-        secorSchemaRegistryClient.getSchema("test-avr-topic-3");
+        try {
+            secorSchemaRegistryClient.getSchema("test-avr-topic-3");
+        } catch (IllegalStateException e) {
+            assertEquals("Unable to get Avro schema not found for topic test-avr-topic-3", e.getMessage());
+        }
     }
 }

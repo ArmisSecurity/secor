@@ -22,25 +22,28 @@ import com.pinterest.secor.io.FileWriter;
 import com.pinterest.secor.util.FileUtil;
 import com.pinterest.secor.util.ReflectionUtil;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.io.compress.GzipCodec;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * FileRegistryTest tests the file registry logic.
  *
  * @author Pawel Garbacki (pawel@pinterest.com)
  */
-public class FileRegistryTest extends TestCase {
+public class FileRegistryTest {
     private static final String PATH = "/some_parent_dir/some_topic/some_partition/some_other_partition/"
             + "10_0_00000000000000000100";
     private static final String PATH_GZ = "/some_parent_dir/some_topic/some_partition/some_other_partition/"
@@ -52,8 +55,8 @@ public class FileRegistryTest extends TestCase {
     private TopicPartition mTopicPartition;
     private FileRegistry mRegistry;
 
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         PropertiesConfiguration properties = new PropertiesConfiguration();
         properties.addProperty("secor.file.reader.writer.factory",
                 "com.pinterest.secor.io.impl.SequenceFileReaderWriterFactory");
@@ -80,11 +83,12 @@ public class FileRegistryTest extends TestCase {
 
         FileWriter createdWriter = mRegistry.getOrCreateWriter(
                 mLogFilePath, null);
-        assertTrue(createdWriter == writer);
+        assertSame(createdWriter, writer);
 
         return writer;
     }
 
+    @Test
     public void testGetOrCreateWriter() throws Exception {
         try (MockedStatic<FileUtil> mockedFileUtil = Mockito.mockStatic(FileUtil.class);
              MockedStatic<ReflectionUtil> mockedReflectionUtil = Mockito.mockStatic(ReflectionUtil.class)) {
@@ -118,10 +122,12 @@ public class FileRegistryTest extends TestCase {
         }
     }
 
+    @Test
     public void testGetWriterShowBeNullForNewFilePaths() throws Exception {
         assertNull(mRegistry.getWriter(mLogFilePath));
     }
 
+    @Test
     public void testGetWriterShowBeNotNull() throws Exception {
         try (MockedStatic<FileUtil> mockedFileUtil = Mockito.mockStatic(FileUtil.class);
              MockedStatic<ReflectionUtil> mockedReflectionUtil = Mockito.mockStatic(ReflectionUtil.class)) {
@@ -149,11 +155,12 @@ public class FileRegistryTest extends TestCase {
 
         FileWriter createdWriter = mRegistry.getOrCreateWriter(
                 mLogFilePathGz, new GzipCodec());
-        assertTrue(createdWriter == writer);
+        assertSame(createdWriter, writer);
 
         return writer;
     }
 
+    @Test
     public void testGetOrCreateWriterCompressed() throws Exception {
         try (MockedStatic<FileUtil> mockedFileUtil = Mockito.mockStatic(FileUtil.class);
              MockedStatic<ReflectionUtil> mockedReflectionUtil = Mockito.mockStatic(ReflectionUtil.class)) {
@@ -186,6 +193,7 @@ public class FileRegistryTest extends TestCase {
         }
     }
 
+    @Test
     public void testDeletePath() throws Exception {
         try (MockedStatic<FileUtil> mockedFileUtil = Mockito.mockStatic(FileUtil.class);
              MockedStatic<ReflectionUtil> mockedReflectionUtil = Mockito.mockStatic(ReflectionUtil.class)) {
@@ -201,6 +209,7 @@ public class FileRegistryTest extends TestCase {
         }
     }
 
+    @Test
     public void testDeleteTopicPartition() throws Exception {
         try (MockedStatic<FileUtil> mockedFileUtil = Mockito.mockStatic(FileUtil.class);
              MockedStatic<ReflectionUtil> mockedReflectionUtil = Mockito.mockStatic(ReflectionUtil.class)) {
@@ -216,6 +225,7 @@ public class FileRegistryTest extends TestCase {
         }
     }
 
+    @Test
     public void testGetSize() throws Exception {
         try (MockedStatic<FileUtil> mockedFileUtil = Mockito.mockStatic(FileUtil.class);
              MockedStatic<ReflectionUtil> mockedReflectionUtil = Mockito.mockStatic(ReflectionUtil.class)) {
@@ -226,15 +236,24 @@ public class FileRegistryTest extends TestCase {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
     public void testGetModificationAgeSec() throws Exception {
         try (MockedStatic<FileUtil> mockedFileUtil = Mockito.mockStatic(FileUtil.class);
-             MockedStatic<ReflectionUtil> mockedReflectionUtil = Mockito.mockStatic(ReflectionUtil.class);
-             MockedStatic<System> mockedSystem = Mockito.mockStatic(System.class)) {
+             MockedStatic<ReflectionUtil> mockedReflectionUtil = Mockito.mockStatic(ReflectionUtil.class)) {
 
-            mockedSystem.when(System::currentTimeMillis).thenReturn(10000L, 100000L);
             createWriter(mockedFileUtil, mockedReflectionUtil);
 
-            assertEquals(90, mRegistry.getModificationAgeSec(mTopicPartition));
+            // Use reflection to set a known creation time (90 seconds ago)
+            Field creationTimesField = FileRegistry.class.getDeclaredField("mCreationTimes");
+            creationTimesField.setAccessible(true);
+            HashMap<LogFilePath, Long> creationTimes = (HashMap<LogFilePath, Long>) creationTimesField.get(mRegistry);
+            long nowSec = System.currentTimeMillis() / 1000L;
+            creationTimes.put(mLogFilePath, nowSec - 90);
+
+            long ageSec = mRegistry.getModificationAgeSec(mTopicPartition);
+            // Allow for small timing variance during test execution
+            assertTrue("Age should be approximately 90 seconds, was: " + ageSec, ageSec >= 89 && ageSec <= 91);
         }
     }
 }

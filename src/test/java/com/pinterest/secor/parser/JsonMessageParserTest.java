@@ -20,7 +20,7 @@ package com.pinterest.secor.parser;
 
 import com.pinterest.secor.common.SecorConfig;
 import com.pinterest.secor.message.Message;
-import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -29,7 +29,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
 
-public class JsonMessageParserTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class JsonMessageParserTest {
 
     private SecorConfig mConfig;
     private Message mMessageWithSecondsTimestamp;
@@ -39,7 +41,7 @@ public class JsonMessageParserTest extends TestCase {
     private Message mMessageWithNestedTimestamp;
     private long timestamp;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         mConfig = Mockito.mock(SecorConfig.class);
         Mockito.when(mConfig.getMessageTimestampName()).thenReturn("timestamp");

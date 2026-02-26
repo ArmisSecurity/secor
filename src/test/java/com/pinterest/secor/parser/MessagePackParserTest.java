@@ -21,7 +21,7 @@ package com.pinterest.secor.parser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pinterest.secor.common.SecorConfig;
 import com.pinterest.secor.message.Message;
-import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
@@ -29,7 +29,9 @@ import org.msgpack.jackson.dataformat.MessagePackFactory;
 import java.util.HashMap;
 import java.util.TimeZone;
 
-public class MessagePackParserTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class MessagePackParserTest {
 
     SecorConfig mConfig;
     private MessagePackParser mMessagePackParser;
@@ -40,7 +42,7 @@ public class MessagePackParserTest extends TestCase {
     private ObjectMapper mObjectMapper;
     private long timestamp;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         mConfig = Mockito.mock(SecorConfig.class);
         Mockito.when(mConfig.getMessageTimestampName()).thenReturn("ts");

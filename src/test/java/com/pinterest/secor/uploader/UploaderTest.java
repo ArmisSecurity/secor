@@ -18,13 +18,7 @@
  */
 package com.pinterest.secor.uploader;
 
-import com.pinterest.secor.common.FileRegistry;
-import com.pinterest.secor.common.LogFilePath;
-import com.pinterest.secor.common.OffsetTracker;
-import com.pinterest.secor.common.SecorConfig;
-import com.pinterest.secor.common.SecorConstants;
-import com.pinterest.secor.common.TopicPartition;
-import com.pinterest.secor.common.ZookeeperConnector;
+import com.pinterest.secor.common.*;
 import com.pinterest.secor.io.FileReader;
 import com.pinterest.secor.io.FileWriter;
 import com.pinterest.secor.io.KeyValue;
@@ -32,11 +26,11 @@ import com.pinterest.secor.monitoring.MetricCollector;
 import com.pinterest.secor.reader.MessageReader;
 import com.pinterest.secor.util.FileUtil;
 import com.pinterest.secor.util.IdUtil;
-import junit.framework.TestCase;
 import org.apache.hadoop.io.compress.CompressionCodec;
 import org.joda.time.DateTime;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.MockedStatic;
-import static org.mockito.Mockito.doNothing;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -49,7 +43,7 @@ import java.util.HashSet;
  *
  * @author Pawel Garbacki (pawel@pinterest.com)
  */
-public class UploaderTest extends TestCase {
+public class UploaderTest {
     private static class TestUploader extends Uploader {
         private FileReader mReader;
 
@@ -87,9 +81,8 @@ public class UploaderTest extends TestCase {
 
     private TestUploader mUploader;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
-        super.setUp();
         mTopicPartition = new TopicPartition("some_topic", 0);
 
         mLogFilePath = new LogFilePath("/some_parent_dir",
@@ -111,13 +104,15 @@ public class UploaderTest extends TestCase {
         Mockito.when(mFileRegistry.getTopicPartitions()).thenReturn(
                 topicPartitions);
 
-        mUploadManager = new HadoopS3UploadManager(mConfig);
+        mUploadManager = Mockito.mock(UploadManager.class);
 
         mZookeeperConnector = Mockito.mock(ZookeeperConnector.class);
         mUploader = new TestUploader(mConfig, mOffsetTracker, mFileRegistry, mUploadManager, messageReader,
                 mZookeeperConnector);
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
     public void testUploadAtTime() throws Exception {
         try (MockedStatic<DateTime> mockedDateTime = Mockito.mockStatic(DateTime.class);
              MockedStatic<FileUtil> mockedFileUtil = Mockito.mockStatic(FileUtil.class)) {
@@ -141,15 +136,16 @@ public class UploaderTest extends TestCase {
             mockedFileUtil.when(() -> FileUtil.getPrefix("some_topic", mConfig))
                     .thenReturn("s3a://some_bucket/some_s3_parent_dir");
 
+            // Mock upload to return a completed handle
+            Handle<?> mockHandle = Mockito.mock(Handle.class);
+            Mockito.when(mockHandle.get()).thenReturn(null);
+            Mockito.doReturn(mockHandle).when(mUploadManager).upload(Mockito.any(LogFilePath.class));
+
             mUploader.applyPolicy(false);
 
             final String lockPath = "/secor/locks/some_topic/0";
             Mockito.verify(mZookeeperConnector).lock(lockPath);
-            mockedFileUtil.verify(() -> FileUtil.moveToCloud(
-                    "/some_parent_dir/some_topic/some_partition/some_other_partition/"
-                            + "10_0_00000000000000000010",
-                    "s3a://some_bucket/some_s3_parent_dir/some_topic/some_partition/"
-                            + "some_other_partition/10_0_00000000000000000010"));
+            Mockito.verify(mUploadManager).upload(mLogFilePath);
             Mockito.verify(mFileRegistry).deleteTopicPartition(mTopicPartition);
             Mockito.verify(mZookeeperConnector).setCommittedOffsetCount(
                     mTopicPartition, 1L);
@@ -159,6 +155,8 @@ public class UploaderTest extends TestCase {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
     public void testUploadFiles() throws Exception {
         try (MockedStatic<FileUtil> mockedFileUtil = Mockito.mockStatic(FileUtil.class)) {
 
@@ -190,15 +188,17 @@ public class UploaderTest extends TestCase {
 
             mockedFileUtil.when(() -> FileUtil.getPrefix("some_topic", mConfig))
                     .thenReturn("s3a://some_bucket/some_s3_parent_dir");
+
+            // Mock upload to return a completed handle
+            Handle<?> mockHandle = Mockito.mock(Handle.class);
+            Mockito.when(mockHandle.get()).thenReturn(null);
+            Mockito.doReturn(mockHandle).when(mUploadManager).upload(Mockito.any(LogFilePath.class));
+
             mUploader.applyPolicy(false);
 
             final String lockPath = "/secor/locks/some_topic/0";
             Mockito.verify(mZookeeperConnector).lock(lockPath);
-            mockedFileUtil.verify(() -> FileUtil.moveToCloud(
-                    "/some_parent_dir/some_topic/some_partition/some_other_partition/"
-                            + "10_0_00000000000000000010",
-                    "s3a://some_bucket/some_s3_parent_dir/some_topic/some_partition/"
-                            + "some_other_partition/10_0_00000000000000000010"));
+            Mockito.verify(mUploadManager).upload(mLogFilePath);
             Mockito.verify(mFileRegistry).deleteTopicPartition(mTopicPartition);
             Mockito.verify(mZookeeperConnector).setCommittedOffsetCount(
                     mTopicPartition, 21L);
@@ -208,6 +208,7 @@ public class UploaderTest extends TestCase {
         }
     }
 
+    @Test
     public void testDeleteTopicPartition() throws Exception {
         Mockito.when(
                 mZookeeperConnector.getCommittedOffsetCount(mTopicPartition))
@@ -223,6 +224,7 @@ public class UploaderTest extends TestCase {
         Mockito.verify(mFileRegistry).deleteTopicPartition(mTopicPartition);
     }
 
+    @Test
     public void testTrimFiles() throws Exception {
         try (MockedStatic<IdUtil> mockedIdUtil = Mockito.mockStatic(IdUtil.class)) {
 
