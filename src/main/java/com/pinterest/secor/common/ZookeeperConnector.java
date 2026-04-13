@@ -97,23 +97,22 @@ public class ZookeeperConnector implements Closeable {
     public void lock(String lockPath) {
         assert mLocks.get(lockPath) == null: "mLocks.get(" + lockPath + ") == null";
         InterProcessMutex distributedLock = new InterProcessMutex(mCurator, lockPath);
-        mLocks.put(lockPath, distributedLock);
         try {
             distributedLock.acquire();
+            mLocks.put(lockPath, distributedLock);
         } catch (Exception ex) {
             throw new RuntimeException("Unexpected ZK error", ex);
         }
     }
 
     public void unlock(String lockPath) {
-        InterProcessMutex distributedLock = mLocks.get(lockPath);
+        InterProcessMutex distributedLock = mLocks.remove(lockPath);
         assert distributedLock != null: "mLocks.get(" + lockPath + ") != null";
         try {
             distributedLock.release();
         } catch (Exception ex) {
             throw new RuntimeException("Unexpected ZK error", ex);
         }
-        mLocks.remove(lockPath);
     }
 
     protected String getCommittedOffsetGroupPath() {
