@@ -20,22 +20,21 @@ package com.pinterest.secor.parser;
 
 import com.pinterest.secor.common.SecorConfig;
 import com.pinterest.secor.message.Message;
-import junit.framework.TestCase;
 import org.apache.thrift.TSerializer;
 import org.apache.thrift.protocol.TBinaryProtocol;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.pinterest.secor.thrift.UnitTestMessage;
 
-@RunWith(PowerMockRunner.class)
-public class ThriftMessageParserTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class ThriftMessageParserTest {
     private SecorConfig mConfig;
     private long timestamp;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         mConfig = Mockito.mock(SecorConfig.class);
         Mockito.when(TimestampedMessageParser.usingDateFormat(mConfig)).thenReturn("yyyy-MM-dd");

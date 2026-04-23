@@ -20,20 +20,19 @@ package com.pinterest.secor.parser;
 
 import com.pinterest.secor.common.SecorConfig;
 import com.pinterest.secor.message.Message;
-import junit.framework.TestCase;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
-@RunWith(PowerMockRunner.class)
-public class SplitByFieldMessageParserTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class SplitByFieldMessageParserTest {
 
     private SecorConfig mConfig;
     private Message mMessageWithTypeAndTimestamp;
@@ -41,7 +40,7 @@ public class SplitByFieldMessageParserTest extends TestCase {
     private Message mMessageWithoutType;
     private long timestamp;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         mConfig = Mockito.mock(SecorConfig.class);
         Mockito.when(mConfig.getMessageSplitFieldName()).thenReturn("type");
@@ -86,7 +85,6 @@ public class SplitByFieldMessageParserTest extends TestCase {
     public void testExtractTimestampMillisExceptionNoTimestamp() throws Exception {
         SplitByFieldMessageParser jsonMessageParser = new SplitByFieldMessageParser(mConfig);
 
-        // Throws exception if there's no timestamp, for any reason.
         jsonMessageParser.extractTimestampMillis((JSONObject) JSONValue.parse(mMessageWithoutTimestamp.getPayload()));
     }
 
@@ -110,7 +108,6 @@ public class SplitByFieldMessageParserTest extends TestCase {
     public void testExtractTimestampMillisExceptionNoType() throws Exception {
         SplitByFieldMessageParser jsonMessageParser = new SplitByFieldMessageParser(mConfig);
 
-        // Throws exception if there's no timestamp, for any reason.
         jsonMessageParser.extractEventType((JSONObject) JSONValue.parse(mMessageWithoutType.getPayload()));
     }
 

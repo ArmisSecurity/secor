@@ -27,9 +27,7 @@ import org.apache.parquet.hadoop.ParquetWriter;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.google.common.io.Files;
 import com.pinterest.secor.common.LogFilePath;
@@ -44,7 +42,6 @@ import com.pinterest.secor.util.ReflectionUtil;
 
 import junit.framework.TestCase;
 
-@RunWith(PowerMockRunner.class)
 public class ProtobufParquetFileReaderWriterFactoryTest extends TestCase {
 
     private SecorConfig config;

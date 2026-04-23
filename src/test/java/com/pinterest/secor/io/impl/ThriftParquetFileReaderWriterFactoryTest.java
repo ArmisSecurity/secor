@@ -29,9 +29,7 @@ import org.apache.thrift.TDeserializer;
 import org.apache.thrift.TSerializer;
 import org.apache.thrift.protocol.TCompactProtocol;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.google.common.io.Files;
 import com.pinterest.secor.common.LogFilePath;
@@ -45,7 +43,6 @@ import com.pinterest.secor.util.ReflectionUtil;
 
 import junit.framework.TestCase;
 
-@RunWith(PowerMockRunner.class)
 public class ThriftParquetFileReaderWriterFactoryTest extends TestCase {
 
     private SecorConfig config;
